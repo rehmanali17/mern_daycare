@@ -1,0 +1,4 @@
+{
+    "PORT": 3000,
+    "mongoURi":"mongodb+srv://rehman_ali17:malik70@cluster0.p7ukn.mongodb.net/daycare?retryWrites=true&w=majority"
+}
