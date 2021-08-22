@@ -8,7 +8,7 @@ const plans_boughtSchema = new Schema({
     },
     plan: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'plan'
     },
     time: {
         type: String,

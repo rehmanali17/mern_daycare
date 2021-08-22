@@ -12,7 +12,7 @@ app.use(cors());
 const PORT = config.get('PORT') || process.env.PORT
 
 // Database Connection
-mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopology:true})
+mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex: true})
     .then(result => {
         console.log("DB Connected");
         app.listen(PORT, ()=> console.log(`Server Running at PORT ${PORT}`))
@@ -24,5 +24,7 @@ mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopolo
 
 // Routes    
 app.use('/', require('./routes/unauthRoutes'))
+app.use('/auth', require('./routes/authRoutes'))
+app.use('/user', require('./routes/userRoutes'))
 
 
