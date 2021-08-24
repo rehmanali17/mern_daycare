@@ -1,9 +1,0 @@
-{
-    "PORT": 3000,
-    "mongoURi":"mongodb+srv://rehman_ali17:malik70@cluster0.p7ukn.mongodb.net/daycare?retryWrites=true&w=majority",
-    "jwtsecret": "ASDFGHJKLPOIUYTREWQMNBVCXZ!@#$%^&*()",
-    "clientID":"741572393109-luofsf7ikbmtvqouuofkl5tlikcu3hnq.apps.googleusercontent.com",
-    "clientSecret":"TQayz3Npv8vGjdPFvRMCW-65",
-    "githubClientID":"a36c63cafb63b965459f",
-    "githubClientSecret":"e0dd23952e956089f495b826448a4240f336488c"
-}
