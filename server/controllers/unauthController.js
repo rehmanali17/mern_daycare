@@ -22,10 +22,31 @@ const Plan = require('../models/planModel')
 
 const PlanController = async (req,res)=>{
     try{
-        const plans = await Plan.find();
-        res.json({plans})
+        const docs = await Plan.find().select('-__v');
+        const response = {
+            lenght: docs.length,
+            plans: docs.map(doc => {
+                return {
+                    _id: doc._id,
+                    title: doc.title,
+                    duration: doc.duration,
+                    trial_period: doc.trial_period,
+                    time_duration: doc.time_duration,
+                    price: doc.price,
+                    request: {
+                        type: 'POST',
+                        url: 'http://localhost:3000/user/buy_plan/'+ doc.id
+                    }
+                }
+            })
+        }
+        res.json(response)
     }catch(error){
-        res.json({msg: "Error fetching the plans"})
+        console.log(error.message)
+        res.json({
+            message : "Error fetching the plans",
+            error : error.message
+        })
     }
 }
 
@@ -38,10 +59,25 @@ const ContactController = async (req,res)=>{
             address,
             message
         })
-        await newMessage.save()
-        res.json(newMessage)
+        newMessage.save().then(message =>{
+            res.json({
+                message: 'Message sent successfully',
+                contact_message: {
+                    _id: message._id,
+                    email: message.email,
+                    name: message.name,
+                    address: message.address,
+                    message: message.message,
+                }
+            })
+        })
+        
     }catch(error){
-        res.json({msg: "Error sending the message"})
+        console.log(error.message)
+        res.json({
+            message: "Error sending the message",
+            error: error.message,
+        })
     }
 } 
 

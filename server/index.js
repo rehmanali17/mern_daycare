@@ -2,12 +2,14 @@ const express = require('express');
 const config = require('config');
 const cors = require('cors');
 const mongoose = require('mongoose')
-
+const passport = require('passport')
+const router = require('./routes/unauthRoutes');
 const app = express()
 
 app.use(express.json({ extended: true, limit: '5mb' }))
 app.use(cors());
-
+app.use(passport.initialize())
+app.use(passport.session())
 
 const PORT = config.get('PORT') || process.env.PORT
 
@@ -26,5 +28,7 @@ mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopolo
 app.use('/', require('./routes/unauthRoutes'))
 app.use('/auth', require('./routes/authRoutes'))
 app.use('/user', require('./routes/userRoutes'))
+
+
 
 

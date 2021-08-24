@@ -7,7 +7,7 @@ router.get('/',auth,GetUserPlans)
 
 router.get('/buy_plan/:id', auth ,GetBuyPlan)
 
-router.post('/buy_plan', auth ,[
+router.post('/buy_plan/:id', auth ,[
     check('time', 'Please choose the time').notEmpty()
 ],PostBuyPlan)
 
