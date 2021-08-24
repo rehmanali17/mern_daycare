@@ -40,5 +40,13 @@ router.get('/github/redirect', passport.authenticate('github'), (req,res)=>{
     res.json({token})
 })
 
+router.get('/facebook', passport.authenticate('facebook'))
+
+router.get('/facebook/redirect', passport.authenticate('facebook'), (req,res)=>{
+    let token = jwt.sign({user: req.user._id},config.get('jwtsecret'),{ expiresIn : '1day' })
+    res.json({token})
+})
+
+
 
 module.exports = router

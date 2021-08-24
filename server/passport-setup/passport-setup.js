@@ -1,6 +1,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GithubStrategy = require('passport-github2').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const config = require('config')
 const User = require('../models/userModel')
 
@@ -57,3 +58,28 @@ passport.use(new GithubStrategy({
         done(null, newUser)
     }
 }))
+
+
+passport.use(new FacebookStrategy({
+    clientID: config.get('facebookAppID'),
+    clientSecret: config.get('facebookAppSecret'),
+    profileFields: ['email', 'displayName', 'picture.type(large)'],
+    callbackURL: "http://localhost:3000/auth/facebook/redirect"
+  },async (accessToken, refreshToken, profile, done)=>{
+    const name = profile.displayName
+    const email = profile.emails[0].value
+    const imagePath = profile.photos[0].value
+    const extUser = await User.findOne({email})
+    if(extUser){
+        done(null, extUser)
+    }else{
+        let newUser = new User({
+            name,
+            email,
+            imagePath
+        })
+        await newUser.save()
+        done(null, newUser)
+    }
+  }
+));

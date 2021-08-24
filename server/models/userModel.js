@@ -5,32 +5,26 @@ const userSchema = new Schema({
     email:{
         type: String,
         unique: true,
-        length: 70,
-        required: true
+        length: 70
     },
     password:{
         type: String,
-        length: 70,
-        required: true
+        length: 70
     },
     name: {
         type: String,
-        length: 50,
-        required: true
+        length: 50
     },
     phone:{
         type: String,
-        length: 11,
-        required: true
+        length: 11
     },
     address: {
         type: String,
-        length: 120,
-        required: true
+        length: 120
     },
     imagePath: {
-        type: String,
-        required: true
+        type: String
     }
 })
 
