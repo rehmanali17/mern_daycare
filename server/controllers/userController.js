@@ -19,11 +19,11 @@ const GetUserPlans = async (req,res)=>{
                     request: [
                         {view : {
                             type: 'GET',
-                            url: 'http://localhost:3000/user/view_plan?id='+ doc.plan.id + '&time=' + doc.time
+                            url: 'http://localhost:5000/user/view_plan?id='+ doc.plan.id + '&time=' + doc.time
                         },
                          delete: {
                             type: 'DELETE',
-                            url: 'http://localhost:3000/user/delete_plan/'+ doc.id
+                            url: 'http://localhost:5000/user/delete_plan/'+ doc.id
                         }
                     }
                     ]
@@ -67,7 +67,7 @@ const PostBuyPlan = async (req,res)=>{
     try{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            res.json({errors: errors.array()})
+            res.status(300).json(errors.array())
         }else{
             const { id } = req.params
             const { time } = req.body
@@ -76,14 +76,26 @@ const PostBuyPlan = async (req,res)=>{
                 plan: id,
                 time
                 })
-            newPlanBought.save().then(plan =>{
-                res.json({
-                    message: 'Plan bought successfully',
+            newPlanBought.save().then(async (plan )=>{
+                let doc = await PlanBought.find({user: req.userId, _id: plan._id}).populate('plan', 'title').select('_id plan time')
+                doc = doc[0]
+                res.status(200).json({
+                    msg: 'Plan bought successfully',
                     plan: {
-                        _id: plan._id,
-                        user: plan.user,
-                        plan: plan.plan,
-                        time: plan.time
+                        _id: doc._id,
+                        time: doc.time,
+                        plan: doc.plan,
+                        request: [
+                            {view : {
+                                type: 'GET',
+                                url: 'http://localhost:5000/user/view_plan?id='+ doc.plan._id + '&time=' + doc.time
+                            },
+                            delete: {
+                                type: 'DELETE',
+                                url: 'http://localhost:5000/user/delete_plan/'+ doc.id
+                            }
+                        }
+                        ]
                     }
                 })
             })
@@ -91,10 +103,10 @@ const PostBuyPlan = async (req,res)=>{
         }
     }catch(error){
         console.log(error.message);
-        res.json({
-            message: 'Error buying the plan',
+        res.status(300).json([{
+            msg: 'Error buying the plan',
             error: error.message
-        })
+        }])
     }
     
 }
@@ -129,16 +141,16 @@ const DeleteUserPlan = async (req,res)=>{
         const { id } = req.params
         if(mongoose.Types.ObjectId.isValid(id)){
             await PlanBought.findByIdAndDelete(id)
-            res.json({message: "Plan removed successfully"})
+            res.status(200).json([{message: "Plan removed successfully"}])
         }else{
-            res.json({msg: "Invalid plan id"})
+            res.status(300).json([{message: "Invalid plan id"}])
         }   
     }catch(error){
         console.log(error.message)
-        res.json({
+        res.status(300).json([{
             message: 'Error removing the plan',
             error: error.message
-        })
+        }])
     }
 }
 
@@ -161,19 +173,19 @@ const UpdateUserProfile = (req,res)=>{
         upload(req,res, async (err)=>{
             if(err){
                 let error = err.message != undefined ? err.message : err
-                res.json({
-                    message: 'Error signing up',
+                res.status(300).json([{
+                    msg: 'Error updating the profile! ' + error,
                     error
-                })
+                }])
             }else if(req.file == undefined){
-                res.json({
-                    message: 'Error signing up',
+                res.status(300).json([{
+                    msg: 'Error updating the profile! No file selected',
                     error: 'No file selected'
-                })
+                }])
             }else{
                 const errors = validationResult(req.body)
                 if(!errors.isEmpty()){
-                    res.json({errors: errors.array()})
+                    res.status(300).json(errors.array())
                 }else{
                     const id = req.userId
                     const { name , address, phone, password } = req.body
@@ -187,8 +199,8 @@ const UpdateUserProfile = (req,res)=>{
                         imagePath: req.file.path
                     }
                     User.findByIdAndUpdate(id, newUser, { new: true, useFindAndModify: false }).then(user => {
-                        res.json({
-                            message: "Profile updated successfully",
+                        res.status(200).json({
+                            msg: "Profile updated successfully",
                             user: {
                                 _id: user._id,
                                 name: user.name,
@@ -198,17 +210,17 @@ const UpdateUserProfile = (req,res)=>{
                             }
                         })
                     }).catch(err => {
-                        res.json(err)
+                        res.status(300).json(err)
                     }) 
                 }
             }
         })
     }catch(error){
         console.log(error.message)
-        res.json({
-            message: "Error updating the profile",
+        res.status(300).json([{
+            msg: "Error updating the profile",
             error: error.message
-        })
+        }])
     }
 }
 

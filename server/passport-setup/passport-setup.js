@@ -64,7 +64,7 @@ passport.use(new FacebookStrategy({
     clientID: config.get('facebookAppID'),
     clientSecret: config.get('facebookAppSecret'),
     profileFields: ['email', 'displayName', 'picture.type(large)'],
-    callbackURL: "http://localhost:3000/auth/facebook/redirect"
+    callbackURL: "http://localhost:5000/auth/facebook/redirect"
   },async (accessToken, refreshToken, profile, done)=>{
     const name = profile.displayName
     const email = profile.emails[0].value

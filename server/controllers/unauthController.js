@@ -60,7 +60,7 @@ const ContactController = async (req,res)=>{
             message
         })
         newMessage.save().then(message =>{
-            res.json({
+            res.status(201).json([{
                 message: 'Message sent successfully',
                 contact_message: {
                     _id: message._id,
@@ -69,15 +69,15 @@ const ContactController = async (req,res)=>{
                     address: message.address,
                     message: message.message,
                 }
-            })
+            }])
         })
         
     }catch(error){
         console.log(error.message)
-        res.json({
+        res.status(300).json([{
             message: "Error sending the message",
             error: error.message,
-        })
+        }])
     }
 } 
 

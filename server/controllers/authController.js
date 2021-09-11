@@ -12,24 +12,24 @@ const SignupController = (req,res)=>{
         upload(req,res, async (err)=>{
             if(err){
                 let error = err.message != undefined ? err.message : err
-                res.json({
-                    message: 'Error signing up',
+                res.status(400).json([{
+                    msg: 'Error signing up! ' + error,
                     error
-                })
+                }])
             }else if(req.file == undefined){
-                res.json({
-                    message: 'Error signing up',
+                res.status(400).json([{
+                    msg: 'Error signing up! No file selected',
                     error: 'No file selected'
-                })
+                }])
             }else{
                 const errors = validationResult(req.body);
                 if(!errors.isEmpty()){
-                    res.json({errors:errors.array()})
+                    res.status(400).json(errors.array())
                 }else{
                     const { email, password, phone, name, address } = req.body;
                     let extUser = await User.findOne({ email })
                     if(extUser){
-                        res.json({message: "User already exists"});
+                        res.status(400).json([{msg: "User already exists"}]);
                     }else{
                         const salt = await bcrypt.genSalt(10);
                         const hashedPassword = await bcrypt.hash(password, salt);
@@ -43,10 +43,10 @@ const SignupController = (req,res)=>{
                         })
                         newUser.save().then(user => {
                             let token = jwt.sign({user: user._id}, config.get('jwtsecret'), { expiresIn: '1day' })
-                            res.json({token});
+                            res.status(201).json({token});
                         })
                         .catch(err => {
-                            res.json(err)
+                            res.status(400).json(err)
                         })
                     }
                     
@@ -55,10 +55,10 @@ const SignupController = (req,res)=>{
     })
     }catch(error){
         console.log(error.message);
-        res.json({
-            message: "Error signing up",
+        res.status(400).json([{
+            msg: "Error signing up",
             error: error.message
-        });
+        }]);
     }    
 }
 
@@ -66,7 +66,7 @@ const LoginController = async (req,res)=>{
     try{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            res.json({errors:errors.array()})
+            res.status(401).json(errors.array())
         }else{
             const { email, password } = req.body
             let user = await User.findOne({email})
@@ -74,24 +74,24 @@ const LoginController = async (req,res)=>{
                 const isMatch = await bcrypt.compare(password,user.password);
                 if(isMatch){
                     let token = jwt.sign({user: user._id}, config.get('jwtsecret'), { expiresIn: '1day' })
-                    res.json({token});
+                    res.status(200).json({token});
                 }else{
-                    res.json({
-                        message: "Incorrect credentials"
-                    });
+                    res.status(401).json([{
+                        msg: "Incorrect credentials"
+                    }]);
                 }
             }else{
-                res.json({
-                    message: "User does not exist"
-                });
+                res.status(401).json([{
+                    msg: "User does not exist"
+                }]);
             }
         }
     }catch(error){
         console.log(error.message);
-        res.json({
-            message: "Error logging in",
+        res.status(401).json([{
+            msg: "Error logging in",
             error: error.message
-        });
+        }]);
     }
 }
 
