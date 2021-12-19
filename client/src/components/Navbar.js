@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 
 const Navbar = ()=>{
+    console.log('Rendering Home Navbar Component!')
     return(
         <Fragment>
             <nav className="navbar navbar-expand-lg navbar-light bg-primary">
@@ -25,4 +26,4 @@ const Navbar = ()=>{
     );
 }
 
-export default Navbar
+export default React.memo(Navbar)
